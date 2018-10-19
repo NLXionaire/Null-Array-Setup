@@ -198,10 +198,13 @@ masternodeprivkey={GENKEY_VALUE}
 
 Replace the following in the above config:
 
-*{RPC_USERNAME}:* This can be any username you want. You do not have to remember it.
-*{RPC_PASSWORD}:* This can be any password you want. You do not have to remember it.
-*{VPS_IP_ADDRESS}:* This is the public ip address of the vps. Usually the same address you used to connect via putty from Step 1.
-{GENKEY_VALUE}:* This is the genkey value you saved from step 14.
+**{RPC_USERNAME}:** This can be any username you want. You do not have to remember it.
+
+**{RPC_PASSWORD}:** This can be any password you want. You do not have to remember it.
+
+**{VPS_IP_ADDRESS}:** This is the public ip address of the vps. Usually the same address you used to connect via putty from Step 1.
+
+**{GENKEY_VALUE}:** This is the genkey value you saved from step 14.
 
 Once the config file is setup correctly you can save and exit the editor with the following key sequences: *CTRL+X*, *Y*, *ENTER*
 
