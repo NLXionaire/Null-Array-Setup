@@ -15,7 +15,7 @@ If you require further assistance contact the support team on [Discord](https://
 ## Contents
 * **Section A**: Creating the VPS within [Vultr](https://www.vultr.com/?ref=7473052).
 * **Section B**: Downloading and installing [Putty](https://www.putty.org/).
-* **Section C**: Connecting to the VPS and installing the NAV script via Putty.
+* **Section C**: Connecting to the VPS and Manually Installing the NAV via Putty.
 * **Section D**: Preparing the local wallet.
 * **Section E**: Connecting & starting the NAV.
 ***
@@ -74,7 +74,7 @@ If you require further assistance contact the support team on [Discord](https://
 ***
 
 
-## Section C: Connecting to the VPS & Installing the NAV Script via Putty
+## Section C: Connecting to the VPS & Manually Installing the NAV via Putty
 
 ***Step 1***
 * Copy your VPS IP (you can find this by going to the server tab within Vultr and clicking on your server. 
@@ -138,49 +138,78 @@ If you require further assistance contact the support team on [Discord](https://
 
 ***Step 10***
 
-***YOU ONLY NEED TO RUN THESE 2 COMMANDS IF IT'S A NEW INSTALL.  IF YOU ARE JUST UPDATING A PREVIOUS INSTALL, YOU ONLY NEED TO RUN THE COMMAND IN STEP 11.***
+Visit [https://github.com/white92d15b7/NLX/releases](https://github.com/white92d15b7/NLX/releases) to find a link to the newest linux wallet and replace the url in the command below with the proper linux wallet download url:
 
-* Paste the 2 codes below separately into the Putty terminal then press enter after each one (it will just go to a new line)
-
-`wget https://raw.githubusercontent.com/NLXionaire/nullex-nav-installer/master/nullex-nav-installer.sh`
-
-`sudo chmod +x nullex-nav-installer.sh`
-
-![Example-RootPassEnter](https://imgur.com/dDbHPnt.png)
-
-***
+`wget https://github.com/white92d15b7/NLX/releases/download/1.3.6.1/nullex-1.3.6.1-x86_64-linux-gnu.tar.gz`
 
 ***Step 11***
-* Paste the code below into the Putty terminal then press enter.  ***(THE BELOW COMMAND WILL ALSO BE USED FOR ANY UPDATES THAT ARE MADE TO THE SCRIPT.  YOU WILL JUST RUN THIS SINGLE COMMAND, AND NOT THE 2 ABOVE.  THEY ARE ONLY FOR THE INITIAL INSTALL.)***
 
-`sudo sh nullex-nav-installer.sh`
+Extract the contents of the downloaded wallet file with the following command (be sure to change the filename to match the version you are installing):
 
-![Example-Bash](https://imgur.com/iOSuHgl.png)
+`tar -zxvf nullex-1.3.6.1-x86_64-linux-gnu.tar.gz`
 
-***NOTE*** ***(DO NOT RUN THIS COMMAND IF YOU'VE ALREADY RUN THE ONE ABOVE)
+**Step 12***
 
-The above cmd will install using IPv6 by default. If you are only going to be setting up a single NAV, and you prefer to use IPv4 instead you can force the install to use your IPv4 IP address by using  
+Copy the cli and daemon files to the `/usr/local/bin` directory to make accessing the wallet easier.
 
-`sudo sh nullex-nav-installer.sh -N 4`
-
-***
-
-***Step 12***
-* Sit back and wait for the install (this will take a few mins).  You will need a txt file to save info from Step 11.
-***
+`sudo find $PWD -type f \( -name "nullexd" -o -name "nullex-cli" \) -exec cp {} /usr/local/bin/ \;`
 
 ***Step 13***
-* After the install is complete, scroll up a little bit in the terminal.  
-![Example-installing](https://imgur.com/MPeaDrd.png)
-***
+
+Temporarily open the wallet to generate the config file.
+
+`nullexd -daemon`
 
 ***Step 14***
-* Save your IP address, port and masternodeprivkey in the txt file that we made earlier, you will need this info for your masternode config file. 
-***
+
+Generate a new genkey value (required for the config file). Save the output of this file in a text file for later.
+
+`nullex-cli masternode genkey`
+
+![Example-console](https://i.imgur.com/qD7yzwG.jpg)
 
 ***Step 15***
-* Keep this terminal open, so that we can check the block count and NAV status in future steps.
-***
+
+Close the wallet. You can do this immidiately after opening.
+
+`nullex-cli stop`
+
+***Step 16***
+
+Edit the config file.
+
+`nano ~/.nullexqt/NulleX.conf`
+
+Add the following lines:
+
+```
+rpcuser={RPC_USERNAME}
+rpcpassword={RPC_PASSWORD}
+rpcallowip=127.0.0.1
+rpcport=46001
+listen=1
+server=1
+daemon=1
+externalip={VPS_IP_ADDRESS}:43879
+masternode=1
+masternodeaddr={VPS_IP_ADDRESS}:43879
+masternodeprivkey={GENKEY_VALUE}
+```
+
+Replace the following in the above config:
+
+*{RPC_USERNAME}:* This can be any username you want. You do not have to remember it.
+*{RPC_PASSWORD}:* This can be any password you want. You do not have to remember it.
+*{VPS_IP_ADDRESS}:* This is the public ip address of the vps. Usually the same address you used to connect via putty from Step 1.
+{GENKEY_VALUE}:* This is the genkey value you saved from step 14.
+
+Once the config file is setup correctly you can save and exit the editor with the following key sequences: *CTRL+X*, *Y*, *ENTER*
+
+***Step 17***
+
+Start the wallet again with the new configuration changes.
+
+`nullexd -daemon`
 
 ## Section D: Preparing the Local Wallet
 
@@ -243,7 +272,7 @@ The above cmd will install using IPv6 by default. If you are only going to be se
 
 * For `Alias` use the one you made for ***Section D: Step 3***
 * The `VPS IP Address:Port` is the IP from ***Section C: Step 1*** and the dedicated Port is ***43879***.
-* The `GenKey` is your masternode genkey from ***Section C: Step 11***.
+* The `GenKey` is your masternode genkey from ***Section C: Step 14***.
 * The `TxHash` is the transaction ID/long key that you copied to the text file from ***Section D: Step 6 and 7***.
 * The `Output Index` is the 0 or 1 that you copied to your text file from ***Section D: Step 6 and 7***.
 
@@ -282,11 +311,3 @@ The above cmd will install using IPv6 by default. If you are only going to be se
 
 If you do, congratulations! You have now setup a NAV. If you do not, please contact support on [Discord](https://discord.gg/6q7VWpN) or [Telegram](https://t.me/joinchat/ICJpaEhYCYtqic9X1KM7Ew) and they will be happy to assist you.
 ***
-
-This guide was created by a community member.  ***NulleXReb***.  If it has helped you in anyway, made your day, or was the clutch in getting your Array running drop the guy some rewards @ 
-
-NLX- AdoZ9zYgequjf7KttfLyj7ucyrBigh937T
-
-BTC- 1Eiu35Eb8AUCp8BzVNjUKd7tPXWrP96hQM
-
-
