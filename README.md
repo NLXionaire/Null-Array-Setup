@@ -148,7 +148,7 @@ Extract the contents of the downloaded wallet file with the following command (b
 
 `tar -zxvf nullex-1.3.6.1-x86_64-linux-gnu.tar.gz`
 
-**Step 12***
+***Step 12***
 
 Copy the cli and daemon files to the `/usr/local/bin` directory to make accessing the wallet easier.
 
